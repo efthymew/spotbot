@@ -9,6 +9,9 @@ class Database {
     }
 
     addQueue(name, current_queue) {
+        if (this.queueExists(name)) {
+            throw new Error('Duplicate name entry!');
+        }
         this.db.get('queues').value().push({ name: name, songs: [] })
         for (let i = 0; i < current_queue.length; i++) {
             let my_queue = this.db.get('queues').find({ name: name }).get('songs').value()
@@ -18,17 +21,21 @@ class Database {
     }
 
     queueExists(name) {
-        return this.db.get('queues').find({name: name}).value() != null
+        return this.db.get('queues').find({ name: name }).value() != null
     }
     addToQueue(queueName, songName) {
-        let my_queue = this.db.get('queues').find({ name: queueName }).get('songs').value()
-        my_queue.push(songName);
-        this.db.write();
+        if (this.queueExists(queueName)) {
+            let my_queue = this.db.get('queues').find({ name: queueName }).get('songs').value()
+            my_queue.push(songName);
+            this.db.write();
+        }
     }
 
-    deleteQueue(name) {
-        this.db.get('queues').remove({ name: name })
-        this.db.write();
+    deleteQueue(queueName) {
+        if (!this.queueExists(queueName)) {
+            throw new Error('Nonexistent queue!!');
+        }
+        this.db.get('queues').remove({ name: queueName }).write();
     }
 }
 
