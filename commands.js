@@ -2,5 +2,12 @@ module.exports = {
     'play':[],
     'stop':[],
     'rand': [],
-    'who': []
+    'who': [],
+    'trivia': ['easy', 'medium', 'hard'],
+    'shuffle': [],
+    'save': ['queue'],
+    'add': [],
+    'next': [],
+    'prev': [],
+    'loop': []
 }
