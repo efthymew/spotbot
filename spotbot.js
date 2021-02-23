@@ -50,7 +50,7 @@ function save(msg, rest_of_msg) {
 }
 
 async function play(msg, rest_of_msg) {
-    var song = rest_of_msg.slice(1, 2);
+    var song = rest_of_msg.slice(0, 1);
     try {
         song = ytdl.getVideoID(song);
     } catch (error) {
@@ -68,12 +68,12 @@ async function play(msg, rest_of_msg) {
         //push to end of queue but play it
         current_queue.push(rest_of_msg.slice(1, 2)[0]);
         const conn = await channel.join();
-        conn.play(dl_song);
+        const dispatcher = conn.play(dl_song);
         //when song ends
-        dl_song.on('end', () => {
+        dispatcher.on('finish', () => {
             current_song++;
             if (current_song < current_queue.length) {
-                play(msg, current_queue[current_song])
+                play(msg, [current_queue[current_song]])
             }
         });
     }
@@ -83,14 +83,14 @@ async function play(msg, rest_of_msg) {
 
 //
 function add(msg, rest_of_msg) {
-    var song = rest_of_msg.slice(1, 2);
+    var song = rest_of_msg.slice(0, 1);
     try {
         song = ytdl.getVideoID(song);
     } catch (error) {
         msg.reply(`could not find song: ${song}`);
         return;
     }
-    current_queue.push(rest_of_msg.slice(1, 2)[0]);
+    current_queue.push(rest_of_msg.slice(0, 1)[0]);
     msg.reply('song added to queue!')
     console.log(current_queue)
 }
@@ -165,7 +165,7 @@ bot.on('message', msg => {
         let command = rest_of_msg[0];
         //if message had a command
         if (command in commands) {
-            executeCommand(command, msg, rest_of_msg)
+            executeCommand(command, msg, rest_of_msg.slice(1))
         }
     }
 });
