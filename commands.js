@@ -1,4 +1,6 @@
 module.exports = {
     'play':[],
-    'stop':[]
+    'stop':[],
+    'rand': [],
+    'who': []
 }

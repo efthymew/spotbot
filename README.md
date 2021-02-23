@@ -1,1 +1,1 @@
-JS Discord bot for spotify music
+JS Discord bot for my Discord Server
