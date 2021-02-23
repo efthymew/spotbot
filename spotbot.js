@@ -49,7 +49,7 @@ function executeCommand(command, msg, rest_of_msg) {
 }
 
 function save(msg, rest_of_msg) {
-    var name = rest_of_msg.slice(0, 1);
+    var name = rest_of_msg.slice(0, 1)[0];
     msg.reply('saving curent queue!!!!!!!!!!!')
     if (!db.queueExists(name)) {
         db.addQueue(name, current_queue)
