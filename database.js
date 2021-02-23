@@ -19,6 +19,9 @@ class Database {
         this.db.write();
     }
 
+    queueExists(name) {
+        return this.db.get('queues').find({name: name}).value() != null
+    }
     addToQueue(songName) {
 
     }

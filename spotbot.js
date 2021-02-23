@@ -11,7 +11,7 @@ const bot = new Discord.Client();
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const commands = require('./commands.js');
 
-const db = require( './database.js');
+const db = require( './database.js').Database;
 
 var current_queue = [];
 var current_song = 0;
@@ -40,13 +40,20 @@ function executeCommand(command, msg, rest_of_msg) {
         case 'add':
             add(msg, rest_of_msg);
             break;
+        case 'save':
+            save(msg, rest_of_msg);
+            break;
         default:
         // code block
     }
 }
 
 function save(msg, rest_of_msg) {
-    
+    var name = rest_of_msg.slice(0, 1);
+    msg.reply('saving curent queue!!!!!!!!!!!')
+    if (!db.queueExists(name)) {
+        db.addQueue(name, current_queue)
+    }
 }
 
 async function play(msg, rest_of_msg) {
@@ -66,7 +73,7 @@ async function play(msg, rest_of_msg) {
         const dl_song = await ytdl(song, { quality: 'highestaudio' });
         console.log(dl_song)
         //push to end of queue but play it
-        current_queue.push(rest_of_msg.slice(1, 2)[0]);
+        current_queue.push(rest_of_msg.slice(0, 1)[0]);
         const conn = await channel.join();
         const dispatcher = conn.play(dl_song);
         //when song ends
