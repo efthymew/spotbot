@@ -1,0 +1,16 @@
+{
+  "name": "spotbot",
+  "version": "1.0.0",
+  "description": "Discord Spotify Music Bot",
+  "main": "spotbot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Graham Efthymiou",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "string-argv": "^0.3.1"
+  }
+}
