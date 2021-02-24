@@ -9,5 +9,7 @@ module.exports = {
     'add': [],
     'next': [],
     'prev': [],
-    'loop': []
+    'loop': [],
+    'queues': [],
+    'queue': []
 }

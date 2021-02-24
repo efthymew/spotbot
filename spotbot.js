@@ -12,6 +12,7 @@ const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 const commands = require('./commands.js');
 
 const db = require( './database.js').Database;
+var shuffler = require('knuth-shuffle').knuthShuffle;
 
 var current_queue = [];
 var current_song = 0;
@@ -34,35 +35,96 @@ function executeCommand(command, msg, rest_of_msg) {
             break;
         case 'who':
             break;
-        case 'trivia':
-            trivia(msg, rest_of_msg)
-            break;
         case 'add':
             add(msg, rest_of_msg);
             break;
         case 'save':
             save(msg, rest_of_msg);
             break;
+            
+        case 'queues':
+            queues(msg, rest_of_msg);
+            break;
+            
+        case 'loop':
+            loop(msg, rest_of_msg);
+            break;
+                
+        case 'queue':
+            queue(msg);
+            break;
+        case 'shuffle':
+            shuffle(msg, rest_of_msg);
+            break;
         default:
         // code block
     }
 }
 
+function shuffle(msg, rest_of_msg) {
+    console.log('hello')
+    var name = rest_of_msg[0];
+    if (name) {
+        if (db.queueExists(name)) {
+            msg.reply(`shuffling queue: ${name}`)
+            current_song = 0;
+            current_queue = db.getQueue(name);
+            shuffler(current_queue)
+            play(msg, current_queue);
+        } else {
+            msg.reply(`no queue: ${name}`)
+        }
+    } else {
+        if (current_queue.length > 0) {
+            msg.reply('shuffling current queue');
+        } else {
+            msg.reply('queue is empty!!!!')
+        }
+    }
+}
+
 function save(msg, rest_of_msg) {
-    var name = rest_of_msg.slice(0, 1)[0];
-    msg.reply('saving curent queue!!!!!!!!!!!')
+    var name = rest_of_msg[0];
+    msg.reply('saving current queue!!!!!!!!!!!')
     if (!db.queueExists(name)) {
         db.addQueue(name, current_queue)
     }
 }
 
+function queues(msg, rest_of_msg) {
+    let rep = 'queues:\n' + JSON.stringify(db.getQueues());
+    msg.reply(rep);
+}
+function queue(msg) {
+    let rep = 'current queue:\n' + JSON.stringify(current_queue);
+    msg.reply(rep);
+}
+function loop(msg, rest_of_msg) {
+
+}
+
+function next(msg, rest_of_msg) {
+
+}
+
+function prev(msg, rest_of_msg) {
+
+}
+
 async function play(msg, rest_of_msg) {
-    var song = rest_of_msg.slice(0, 1);
+    var song = rest_of_msg[0];
     try {
         song = ytdl.getVideoID(song);
     } catch (error) {
-        msg.reply(`could not find song: ${song}`);
-        return;
+        if (!db.queueExists(rest_of_msg[0])) {
+            msg.reply(`could not find song: ${rest_of_msg[0]}`);
+            return;
+        } else {
+            current_song = 0;
+            current_queue = db.getQueue(rest_of_msg[0]);
+            play(msg, [current_queue[current_song]]);
+            return;
+        }
     }
     const channel = msg.member.voice.channel;
     if (!channel) {
@@ -70,10 +132,11 @@ async function play(msg, rest_of_msg) {
         return;
     } else {
         msg.reply('playing')
-        const dl_song = await ytdl(song, { quality: 'highestaudio' });
+        const dl_song = await ytdl(song, { filter: 'audioonly', quality: 'highestaudio', highWaterMark: 1<<25  });
         console.log(dl_song)
         //push to end of queue but play it
-        current_queue.push(rest_of_msg.slice(0, 1)[0]);
+        current_queue.push(rest_of_msg[0]);
+        console.log(current_queue)
         const conn = await channel.join();
         const dispatcher = conn.play(dl_song);
         //when song ends
@@ -90,14 +153,14 @@ async function play(msg, rest_of_msg) {
 
 //
 function add(msg, rest_of_msg) {
-    var song = rest_of_msg.slice(0, 1);
+    var song = rest_of_msg[0];
     try {
         song = ytdl.getVideoID(song);
     } catch (error) {
         msg.reply(`could not find song: ${song}`);
         return;
     }
-    current_queue.push(rest_of_msg.slice(0, 1)[0]);
+    current_queue.push(rest_of_msg[0]);
     msg.reply('song added to queue!')
     console.log(current_queue)
 }

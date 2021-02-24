@@ -15,7 +15,7 @@ class Database {
         this.db.get('queues').value().push({ name: name, songs: [] })
         for (let i = 0; i < current_queue.length; i++) {
             let my_queue = this.db.get('queues').find({ name: name }).get('songs').value()
-            my_queue.push(current_queue[0]);
+            my_queue.push(current_queue[i]);
         }
         this.db.write();
     }
@@ -36,6 +36,18 @@ class Database {
             throw new Error('Nonexistent queue!!');
         }
         this.db.get('queues').remove({ name: queueName }).write();
+    }
+
+    getQueue(queueName) {
+        if (this.queueExists(queueName)) {
+            return this.db.get('queues').find({ name: queueName }).get('songs').value()
+        } else {
+            throw new Error('Nonexistent queue!!');
+        }
+    }
+
+    getQueues() {
+        return this.db.get('queues').value()
     }
 }
 
