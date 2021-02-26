@@ -63,12 +63,15 @@ function executeCommand(command, msg, rest_of_msg) {
 }
 
 function who(msg, rest_of_msg) {
-    if (!rest_of_msg) {
-        msg.reply('asked');
+    console.log(msg.mentions.users.array[0]);
+    if (!rest_of_msg || !msg.metions) {
+        msg.channel.send('asked');
     } else if (msg.mentions) {
         //msg.channel.send(msg.mentions.members[0]);
         msg.channel.send(msg.mentions.users.array()[0].username + ' asked!');
         //msg.channel.send('asked!');
+    } else {
+        msg.channel.send('asked');
     }
 }
 
