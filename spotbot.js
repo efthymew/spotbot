@@ -34,6 +34,7 @@ function executeCommand(command, msg, rest_of_msg) {
             rand(msg, rest_of_msg)
             break;
         case 'who':
+            who(msg, rest_of_msg);
             break;
         case 'add':
             add(msg, rest_of_msg);
@@ -58,6 +59,16 @@ function executeCommand(command, msg, rest_of_msg) {
             break;
         default:
         // code block
+    }
+}
+
+function who(msg, rest_of_msg) {
+    if (!rest_of_msg) {
+        msg.reply('asked');
+    } else if (msg.mentions) {
+        //msg.channel.send(msg.mentions.members[0]);
+        msg.channel.send(msg.mentions.users.array()[0].username + ' asked!');
+        //msg.channel.send('asked!');
     }
 }
 
@@ -226,7 +237,7 @@ async function stop(msg) {
 }
 
 function rand(msg, rest_of_msg) {
-
+    msg.channel.send(Math.floor(Math.random() * (6 - 1) + 1));
 }
 bot.on('message', msg => {
     if (msg.content[0] === '$') {
@@ -237,5 +248,7 @@ bot.on('message', msg => {
         if (command in commands) {
             executeCommand(command, msg, rest_of_msg.slice(1))
         }
+    } else if (msg.content.toLowerCase().includes('who')) {
+        msg.channel.send('asked');
     }
 });
